@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   app:
@@ -20,7 +20,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://${DB_USERNAME}:${DB_PASSWORD}@db:${DB_PORT}/${DB_NAME}
       - TZ=Asia/Bangkok
-  
+
   db:
     image: postgres:latest
     container_name: studysync-db
@@ -39,7 +39,5 @@ services:
       timeout: 5s
       retries: 5
 
-    
-  
 volumes:
   postgres-data:
