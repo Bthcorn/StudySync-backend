@@ -1,1 +1,1 @@
-### StudySync Backend
+# StudySync Backend
