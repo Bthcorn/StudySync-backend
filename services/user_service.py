@@ -1,20 +1,24 @@
-from sqlmodel import Session, select
-
-from config.security import get_password_hash, verify_password
-from models.user_model import User, UserCreate
+from models.user_model import UserCreate, UserResponse
+from repositories.user_repository import (
+    UserRepository,
+    get_user_repository,
+)
+from fastapi import HTTPException, Depends
 
 
 class UserService:
-    def __init__(self, session: Session):
-        self.session = session
+    def __init__(self, user_repository: UserRepository):
+        self.user_repository = user_repository
 
-    def create_user(self, user_create: UserCreate) -> User:
-        db_obj = User.model_validate(
-            user_create,
-            update={"hashed_password": get_password_hash(user_create.password)},
-        )
+    def create_user(self, user_create: UserCreate) -> UserResponse:
+        user = self.user_repository.find_by_username(user_create.username)
+        if user:
+            raise HTTPException(status_code=400, detail="User already exists")
 
-        self.session.add(db_obj)
-        self.session.commit()
-        self.session.refresh(db_obj)
-        return db_obj
+        return self.user_repository.create(user_create)
+
+
+def get_user_service(
+    user_repository: UserRepository = Depends(get_user_repository),
+) -> UserService:
+    return UserService(user_repository)
