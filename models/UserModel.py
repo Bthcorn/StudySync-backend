@@ -1,5 +1,6 @@
 import uuid
 
+from enum import Enum
 from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel, func
 from typing import Optional
@@ -31,8 +32,6 @@ class UserLogin(SQLModel):
 
 
 class UserUpdateMe(SQLModel):
-    username: Optional[str] = Field(default=None, max_length=50)
-    password: Optional[str] = Field(default=None, min_length=8, max_length=50)
     banner_img: Optional[str] = None
     profile_img: Optional[str] = None
 

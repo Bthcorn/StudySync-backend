@@ -1,12 +1,14 @@
 from sqlmodel import Session, select
-from models.user_model import UserCreate, User, UserUpdateMe, UserResponse
+from models.UserModel import UserCreate, User, UserUpdateMe, UserResponse
 from config.security import get_password_hash
-from config.db import get_session
+from config.db import get_db_session
 from fastapi import Depends
 
 
 class UserRepository:
-    def __init__(self, session: Session):
+    session: Session
+
+    def __init__(self, session: Session = Depends(get_db_session)):
         self.session = session
 
     def create(self, user_create: UserCreate) -> UserResponse:
@@ -29,12 +31,16 @@ class UserRepository:
         return user
 
     def update(self, user: User, user_update: UserUpdateMe) -> UserResponse:
-        user = UserUpdateMe.model_validate(user_update)
+        user_data = user_update.model_dump(exclude_unset=True)
+        user = User.sqlmodel_update(user, obj=user_data)
         self.session.add(user)
         self.session.commit()
         self.session.refresh(user)
         return user
 
-
-def get_user_repository(session: Session = Depends(get_session)) -> UserRepository:
-    return UserRepository(session)
+    def delete(self, id: str, user: User) -> None:
+        user = self.session.get(User, id)
+        self.session.delete(user)
+        self.session.commit()
+        self.session.flush()
+        return None
