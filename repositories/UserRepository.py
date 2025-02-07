@@ -3,6 +3,7 @@ from models.UserModel import UserCreate, User, UserUpdateMe, UserResponse
 from config.security import get_password_hash
 from config.db import get_db_session
 from fastapi import Depends
+from typing import List, Optional
 
 
 class UserRepository:
@@ -26,9 +27,16 @@ class UserRepository:
         user = self.session.exec(select(User).where(User.username == username)).first()
         return user
 
-    def find_by_id(self, id: str) -> User:
+    def find_by_id(self, id: str) -> UserResponse:
         user = self.session.get(User, id)
         return user
+
+    def list(
+        self, name: Optional[str], limit: Optional[int], start: Optional[int]
+    ) -> List[UserResponse]:
+        users = self.session.exec(select(User).offset(start).limit(limit)).all()
+        print(users)
+        return users
 
     def update(self, user: User, user_update: UserUpdateMe) -> UserResponse:
         user_data = user_update.model_dump(exclude_unset=True)

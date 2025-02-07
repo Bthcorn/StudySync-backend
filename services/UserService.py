@@ -4,6 +4,7 @@ from repositories.UserRepository import (
 )
 from fastapi import HTTPException, Depends, status
 from config.security import verify_password
+from typing import Optional, List
 
 
 class UserService:
@@ -35,6 +36,14 @@ class UserService:
             )
 
         return user
+
+    def list_users(
+        self,
+        name: Optional[str] = None,
+        pageSize: Optional[int] = 10,
+        startIndex: Optional[int] = 1,
+    ) -> List[UserResponse]:
+        return self.user_repository.list(name, pageSize, startIndex)
 
     def update_user(self, id: str, user_update: UserUpdateMe) -> UserResponse:
         user = self.user_repository.find_by_id(id)

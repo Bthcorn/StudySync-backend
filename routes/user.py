@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from services.UserService import UserService
 from models.UserModel import User, UserCreate, UserResponse, UserUpdateMe, UserLogin
 import uuid
+from typing import List
 
 router = APIRouter(prefix="/user", tags=["user"])
 
@@ -28,6 +29,18 @@ def update_user(
 ):
     try:
         return user_service.update_user(user_id, user)
+    except HTTPException as e:
+        raise e
+
+
+@router.get("/list", response_model=List[UserResponse])
+def list_users(
+    pageSize: int = 10, startIndex: int = 1, user_service: UserService = Depends()
+):
+    try:
+        return user_service.list_users(
+            name=None, pageSize=pageSize, startIndex=startIndex
+        )
     except HTTPException as e:
         raise e
 
