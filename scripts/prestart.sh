@@ -11,3 +11,6 @@ alembic upgrade head
 
 # Create initial data in DB
 python initial_data.py
+
+# Start the main process
+exec "$@"

@@ -2,6 +2,7 @@ from sqlmodel import Session, create_engine, select
 from collections.abc import Generator
 
 from config.config import settings
+from config.security import get_password_hash
 from models.UserModel import User, UserCreate
 
 engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
@@ -10,13 +11,19 @@ engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
 def init_db(session: Session) -> None:
 
     user = session.exec(select(User.username == settings.FIRST_SUPERUSER)).first()
-    if not user:
+    if not user or user is None:
         user_in = UserCreate(
             username=settings.FIRST_SUPERUSER,
             password=settings.FIRST_SUPERUSER_PASSWORD,
             is_superuser=True,
         )
-        user = session.add(user_in)
+        user_obj = User.model_validate(
+            user_in,
+            update={"hashed_password": get_password_hash(user_in.password)},
+        )
+        session.add(user_obj)
+        session.commit()
+        session.refresh(user_obj)
 
 
 def get_db_session() -> Generator[Session, None, None]:

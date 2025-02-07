@@ -1,2 +1,2 @@
 from sqlmodel import SQLModel
-from UserModel import User
+from .UserModel import User
