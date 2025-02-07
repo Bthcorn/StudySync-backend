@@ -34,8 +34,9 @@ class UserRepository:
     def list(
         self, name: Optional[str], limit: Optional[int], start: Optional[int]
     ) -> List[UserResponse]:
-        users = self.session.exec(select(User).offset(start).limit(limit)).all()
-        print(users)
+        users = self.session.exec(
+            select(User).offset(start).limit(limit).filter(User.is_superuser == False)
+        ).all()
         return users
 
     def update(self, user: User, user_update: UserUpdateMe) -> UserResponse:

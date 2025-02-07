@@ -23,19 +23,9 @@ def login_user(user: UserLogin, user_service: UserService = Depends()):
         raise e
 
 
-@router.patch("/update/{id}", response_model=UserResponse)
-def update_user(
-    user_id: uuid.UUID, user: UserUpdateMe, user_service: UserService = Depends()
-):
-    try:
-        return user_service.update_user(user_id, user)
-    except HTTPException as e:
-        raise e
-
-
-@router.get("/list", response_model=List[UserResponse])
-def list_users(
-    pageSize: int = 10, startIndex: int = 1, user_service: UserService = Depends()
+@router.get("/", response_model=List[UserResponse])
+def index(
+    pageSize: int = 10, startIndex: int = 0, user_service: UserService = Depends()
 ):
     try:
         return user_service.list_users(
@@ -45,7 +35,25 @@ def list_users(
         raise e
 
 
-@router.delete("/delete/{id}")
+@router.get("/{id}", response_model=UserResponse)
+def get_user(user_id: uuid.UUID, user_service: UserService = Depends()):
+    try:
+        return user_service.get_user(user_id)
+    except HTTPException as e:
+        raise e
+
+
+@router.patch("/{id}", response_model=UserResponse)
+def update_user(
+    user_id: uuid.UUID, user: UserUpdateMe, user_service: UserService = Depends()
+):
+    try:
+        return user_service.update_user(user_id, user)
+    except HTTPException as e:
+        raise e
+
+
+@router.delete("/{id}")
 def delete_user(user_id: uuid.UUID, user_service: UserService = Depends()):
     try:
         return user_service.delete_user(user_id)

@@ -41,9 +41,18 @@ class UserService:
         self,
         name: Optional[str] = None,
         pageSize: Optional[int] = 10,
-        startIndex: Optional[int] = 1,
+        startIndex: Optional[int] = 0,
     ) -> List[UserResponse]:
         return self.user_repository.list(name, pageSize, startIndex)
+
+    def get_user(self, id: str) -> UserResponse:
+        user = self.user_repository.find_by_id(id)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+            )
+
+        return user
 
     def update_user(self, id: str, user_update: UserUpdateMe) -> UserResponse:
         user = self.user_repository.find_by_id(id)
