@@ -3,8 +3,13 @@ import uuid
 from enum import Enum
 from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel, func
-from typing import Optional
+import sqlalchemy as sa
+from typing import Optional, TYPE_CHECKING, List
 from datetime import datetime
+
+if TYPE_CHECKING:
+    from .FolderModel import Folder
+    from .CollaborationModel import Collaboration
 
 
 # Shared properties
@@ -40,7 +45,14 @@ class UserUpdateMe(SQLModel):
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
-    created_at: datetime = Field(default=func.now())
+    created_at: datetime | None = Field(
+        default=datetime.now(),
+        sa_type=sa.DateTime(timezone=True),
+        sa_column_kwargs={"server_default": func.now()},
+    )
+
+    folders: List["Folder"] = Relationship(back_populates="user")
+    collaborations: List["Collaboration"] = Relationship(back_populates="user")
 
 
 # Properties to return via API, id is always required

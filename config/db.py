@@ -4,22 +4,31 @@ from collections.abc import Generator
 from config.config import settings
 from config.security import get_password_hash
 from models.UserModel import User, UserCreate
+from models.FolderModel import Folder
+from models.CollaborationModel import Collaboration
+
+# add more models here
 
 engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
 
 
 def init_db(session: Session) -> None:
 
-    user = session.exec(select(User.username == settings.FIRST_SUPERUSER)).first()
+    user = session.exec(
+        select(User).where(User.username == settings.FIRST_SUPERUSER)
+    ).first()
     if not user or user is None:
         user_in = UserCreate(
             username=settings.FIRST_SUPERUSER,
             password=settings.FIRST_SUPERUSER_PASSWORD,
             is_superuser=True,
         )
+
         user_obj = User.model_validate(
             user_in,
-            update={"hashed_password": get_password_hash(user_in.password)},
+            update={
+                "hashed_password": get_password_hash(user_in.password),
+            },
         )
         session.add(user_obj)
         session.commit()
