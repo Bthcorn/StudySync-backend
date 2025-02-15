@@ -1,6 +1,5 @@
-from sqlmodel import Field, Relationship, SQLModel, Enum, Column
+from sqlmodel import Field, Relationship, SQLModel, Enum, Column, func
 from typing import Optional, List, TYPE_CHECKING
-from pydantic import model_validator
 from datetime import datetime
 import uuid
 import sqlalchemy as sa
@@ -9,6 +8,9 @@ import enum
 if TYPE_CHECKING:
     from .UserModel import User
     from .CollaborationModel import Collaboration
+    from .QuizModel import Quiz
+    from .FlashcardModel import Flashcard
+    from .NoteModel import Note
 
 
 class FolderAccess(str, enum.Enum):
@@ -29,35 +31,26 @@ class FolderBase(SQLModel):
 # Database model
 class Folder(FolderBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    created_at: datetime | None = Field(
-        default=datetime.now(),
+    created_at: datetime = Field(
+        default_factory=datetime.now,
         sa_type=sa.DateTime(timezone=True),
-        sa_column_kwargs={"server_default": sa.func.now()},
     )
-    updated_at: datetime | None = Field(
-        default=datetime.now(),
-        sa_type=sa.DateTime(timezone=True),
-        sa_column_kwargs={
-            "onupdate": lambda: sa.func.now(),
-            "server_default": sa.func.now(),
-        },
+    updated_at: Optional[datetime] = Field(
+        sa_column=Column(
+            sa.DateTime(timezone=True),
+            onupdate=func.now(),
+        ),
     )
 
     user_id: Optional[uuid.UUID] = Field(
         default=None, foreign_key="user.id", ondelete="SET NULL"
     )
     user: Optional["User"] = Relationship(back_populates="folders")
-    collaborations: List["Collaboration"] = Relationship(back_populates="folder")
-
-    # @model_validator(mode="after")
-    # @classmethod
-    # def update_updated_at(cls, obj: "Folder") -> "Folder":
-    #     obj.model_config["validate_assignment"] = False
-
-    #     if obj.updated_at:
-    #         # update updated_at field
-    #         obj.updated_at = datetime.now()
-
-    #     # enable validation again
-    #     obj.model_config["validate_assignment"] = True
-    #     return obj
+    collaborations: List["Collaboration"] = Relationship(
+        back_populates="folder", cascade_delete=True
+    )
+    quizzes: List["Quiz"] = Relationship(back_populates="folder", cascade_delete=True)
+    flashcards: List["Flashcard"] = Relationship(
+        back_populates="folder", cascade_delete=True
+    )
+    notes: List["Note"] = Relationship(back_populates="folder", cascade_delete=True)

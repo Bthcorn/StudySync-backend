@@ -1,6 +1,5 @@
 from sqlmodel import Field, Relationship, SQLModel, func, Enum, Column
 from typing import Optional, List, TYPE_CHECKING
-from pydantic import model_validator
 from datetime import datetime
 import uuid
 import sqlalchemy as sa
@@ -26,10 +25,9 @@ class CollaborationBase(SQLModel):
 # Database model
 class Collaboration(CollaborationBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    invited_at: datetime | None = Field(
-        default=datetime.now(),
+    invited_at: datetime = Field(
+        default_factory=datetime.now,
         sa_type=sa.DateTime(timezone=True),
-        sa_column_kwargs={"server_default": sa.func.now()},
     )
 
     user_id: Optional[uuid.UUID] = Field(

@@ -3,9 +3,8 @@ from collections.abc import Generator
 
 from config.config import settings
 from config.security import get_password_hash
+from models.Models import *
 from models.UserModel import User, UserCreate
-from models.FolderModel import Folder
-from models.CollaborationModel import Collaboration
 
 # add more models here
 
