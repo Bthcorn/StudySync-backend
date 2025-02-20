@@ -1,32 +1,25 @@
 from fastapi import APIRouter, Depends, HTTPException
 from services.UserService import UserService
-from models.UserModel import User, UserCreate, UserResponse, UserUpdateMe, UserLogin
+from models.UserModel import (
+    User,
+    UserCreate,
+    UserResponse,
+    UserUpdateMe,
+    UserLogin,
+    UserResponseWithFolder,
+)
 import uuid
 from typing import List
 
 router = APIRouter(prefix="/user", tags=["user"])
 
 
-@router.post("/register", response_model=UserResponse)
-def register_user(user: UserCreate, user_service: UserService = Depends()):
-    try:
-        return user_service.create_user(user)
-    except HTTPException as e:
-        raise e
-
-
-@router.post("/login", response_model=UserResponse)
-def login_user(user: UserLogin, user_service: UserService = Depends()):
-    try:
-        return user_service.authenticate(user.username, user.password)
-    except HTTPException as e:
-        raise e
-
-
-@router.get("/", response_model=List[UserResponse])
+@router.get(
+    "/",
+)
 def index(
     pageSize: int = 10, startIndex: int = 0, user_service: UserService = Depends()
-):
+) -> List[UserResponse]:
     try:
         return user_service.list_users(
             name=None, pageSize=pageSize, startIndex=startIndex
