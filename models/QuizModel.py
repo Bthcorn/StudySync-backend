@@ -33,7 +33,15 @@ class QuizBase(SQLModel):
     time_limit: int = Field(default=0)
 
 
-class Quiz(SQLModel, table=True):
+class QuizCreate(QuizBase):
+    pass
+
+
+class QuizUpdate(QuizBase):
+    pass
+
+
+class Quiz(QuizBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     created_at: datetime = Field(
         default_factory=datetime.now,
@@ -56,16 +64,31 @@ class Quiz(SQLModel, table=True):
     attempts: List["UserAttempt"] = Relationship(back_populates="quiz")
 
 
+class QuizResponse(QuizBase):
+    id: uuid.UUID
+    created_at: datetime
+    updated_at: Optional[datetime]
+    folder_id: Optional[uuid.UUID]
+    questions: List["Question"]
+
+
 class QuestionBase(SQLModel):
     question: str
+
+
+class QuestionCreate(QuestionBase):
+    pass
+
+
+class QuestionUpdate(QuestionBase):
+    pass
 
 
 class Question(QuestionBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     created_at: datetime = Field(
-        default=datetime.now(),
+        default_factory=datetime.now,
         sa_type=sa.DateTime(timezone=True),
-        sa_column_kwargs={"server_default": sa.func.now()},
     )
     quiz_id: Optional[uuid.UUID] = Field(
         default=None, foreign_key="quiz.id", ondelete="CASCADE"
@@ -76,9 +99,24 @@ class Question(QuestionBase, table=True):
     )
 
 
+class QuestionResponse(QuestionBase):
+    id: uuid.UUID
+    created_at: datetime
+    quiz_id: Optional[uuid.UUID]
+    choices: List["Choice"]
+
+
 class ChoiceBase(SQLModel):
     choice: str
     is_answer: bool = False
+
+
+class ChoiceCreate(ChoiceBase):
+    pass
+
+
+class ChoiceUpdate(ChoiceBase):
+    pass
 
 
 class Choice(ChoiceBase, table=True):
@@ -91,6 +129,12 @@ class Choice(ChoiceBase, table=True):
         default=None, foreign_key="question.id", ondelete="CASCADE"
     )
     question: Optional[Question] = Relationship(back_populates="choices")
+
+
+class ChoiceResponse(ChoiceBase):
+    id: uuid.UUID
+    created_at: datetime
+    question_id: Optional[uuid.UUID]
 
 
 class UserAttemptBase(SQLModel):
