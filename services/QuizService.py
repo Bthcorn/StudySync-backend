@@ -24,6 +24,10 @@ class QuizService:
                 status_code=status.HTTP_404_NOT_FOUND, detail="Folder not found"
             )
 
+        update_folder = folder
+        update_folder.total_items += 1
+        self.folder_repository.update(folder, update_folder)
+
         return self.quiz_repository.create(folder_id, quiz)
 
     def get_quiz(self, quiz_id) -> QuizResponse:
