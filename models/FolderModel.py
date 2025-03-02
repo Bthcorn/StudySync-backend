@@ -4,6 +4,10 @@ from datetime import datetime
 import uuid
 import sqlalchemy as sa
 import enum
+from .QuizModel import Quiz
+from .FlashcardModel import Flashcard
+from .NoteModel import Note
+from .CollaborationModel import Collaboration
 
 if TYPE_CHECKING:
     from .UserModel import User
@@ -28,6 +32,10 @@ class FolderBase(SQLModel):
     img_url: Optional[str] = None
 
 
+class FolderCreate(FolderBase):
+    pass
+
+
 # Database model
 class Folder(FolderBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
@@ -36,6 +44,7 @@ class Folder(FolderBase, table=True):
         sa_type=sa.DateTime(timezone=True),
     )
     updated_at: Optional[datetime] = Field(
+        default=None,
         sa_column=Column(
             sa.DateTime(timezone=True),
             onupdate=func.now(),
@@ -54,3 +63,17 @@ class Folder(FolderBase, table=True):
         back_populates="folder", cascade_delete=True
     )
     notes: List["Note"] = Relationship(back_populates="folder", cascade_delete=True)
+
+
+class FolderResponse(FolderBase):
+    id: uuid.UUID
+    created_at: datetime
+    updated_at: Optional[datetime]
+    user_id: Optional[uuid.UUID]
+    collaborations: List["Collaboration"]
+    quizzes: List["Quiz"]
+    flashcards: List["Flashcard"]
+    notes: List["Note"]
+
+    class Config:
+        from_attributes = True
