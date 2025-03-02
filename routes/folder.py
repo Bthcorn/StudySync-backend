@@ -39,7 +39,7 @@ def get_folder(
     folder_service: FolderService = Depends(),
 ):
     try:
-        return folder_service.ge(folder_id)
+        return folder_service.get_folder(folder_id)
     except HTTPException as e:
         raise e
 
