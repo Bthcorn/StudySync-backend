@@ -3,7 +3,6 @@ from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime
 import uuid
 import sqlalchemy as sa
-from .FolderModel import Folder
 
 if TYPE_CHECKING:
     from .FolderModel import Folder
@@ -46,6 +45,7 @@ class Term(TermBase, table=True):
         sa_type=sa.DateTime(timezone=True),
     )
     updated_at: Optional[datetime] = Field(
+        default=None,
         sa_column=Column(
             sa.DateTime(timezone=True),
             onupdate=func.now(),

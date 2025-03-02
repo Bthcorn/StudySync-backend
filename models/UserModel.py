@@ -6,6 +6,7 @@ from sqlmodel import Field, Relationship, SQLModel, func, Column
 import sqlalchemy as sa
 from typing import Optional, TYPE_CHECKING, List
 from datetime import datetime
+from models.FolderModel import Folder
 
 if TYPE_CHECKING:
     from .FolderModel import Folder
@@ -68,3 +69,7 @@ class User(UserBase, table=True):
 # Properties to return via API, id is always required
 class UserResponse(UserBase):
     id: uuid.UUID
+
+
+class UserResponseWithFolder(UserResponse):
+    folders: list[Folder] = []

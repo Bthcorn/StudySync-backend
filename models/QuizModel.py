@@ -40,6 +40,7 @@ class Quiz(SQLModel, table=True):
         sa_type=sa.DateTime(timezone=True),
     )
     updated_at: Optional[datetime] = Field(
+        default=None,
         sa_column=Column(
             sa.DateTime(timezone=True),
             onupdate=func.now(),
@@ -107,6 +108,7 @@ class UserAttempt(UserAttemptBase, table=True):
         sa_type=sa.DateTime(timezone=True),
     )
     completed_at: Optional[datetime] = Field(
+        default=None,
         sa_column=Column(
             sa.DateTime(timezone=True),
             onupdate=func.now(),
