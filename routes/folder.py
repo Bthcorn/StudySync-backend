@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException
-from services.UserService import UserService
 import uuid
 from typing import List
 from models.FolderModel import FolderCreate, FolderResponse

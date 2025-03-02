@@ -75,5 +75,5 @@ class FolderResponse(FolderBase):
     flashcards: List["Flashcard"]
     notes: List["Note"]
 
-    class Config:
-        from_attributes = True
+    # class Config:
+    #     from_attributes = True
