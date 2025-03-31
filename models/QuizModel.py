@@ -81,7 +81,8 @@ class QuestionCreate(QuestionBase):
 
 
 class QuestionUpdate(QuestionBase):
-    pass
+    id: uuid.UUID
+    choices: List["ChoiceUpdate"]
 
 
 class Question(QuestionBase, table=True):
@@ -116,7 +117,8 @@ class ChoiceCreate(ChoiceBase):
 
 
 class ChoiceUpdate(ChoiceBase):
-    pass
+    id: uuid.UUID
+    question_id: Optional[uuid.UUID]
 
 
 class Choice(ChoiceBase, table=True):
