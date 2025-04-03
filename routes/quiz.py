@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 import uuid
 from typing import List
-from models.QuizModel import QuizCreate, QuizResponse, QuizUpdate
+from models.QuizModel import QuizCreate, QuizResponse, QuizUpdate, QuestionResponse
 from services.QuizService import QuizService
 
 router = APIRouter(prefix="/quiz", tags=["quiz"])
@@ -38,6 +38,16 @@ def get_quiz(
 ):
     try:
         return quiz_service.get_quiz(quiz_id)
+    except HTTPException as e:
+        raise e
+
+@router.get("/{quiz_id}/questions", response_model=List[QuestionResponse])
+def get_quiz_questions(
+    quiz_id: uuid.UUID,
+    quiz_service: QuizService = Depends(),
+):
+    try:
+        return quiz_service.get_quiz_questions(quiz_id)
     except HTTPException as e:
         raise e
 

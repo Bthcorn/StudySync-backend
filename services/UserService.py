@@ -1,4 +1,4 @@
-from models.UserModel import UserCreate, UserResponse, UserUpdateMe
+from models.UserModel import UserCreate, UserResponse, UserUpdateMe, UserResponseWithFolder
 from repositories.UserRepository import (
     UserRepository,
 )
@@ -52,6 +52,14 @@ class UserService:
                 status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
             )
 
+        return user
+    
+    def get_user_with_folders(self, id: str) -> UserResponseWithFolder:
+        user = self.user_repository.find_by_id(id)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+            )
         return user
 
     def update_user(self, id: str, user_update: UserUpdateMe) -> UserResponse:
