@@ -16,6 +16,6 @@ def login_user(user: UserLogin, auth_service: AuthService = Depends()):
 @router.post("/register")
 def register_user(user: UserCreate, auth_service: AuthService = Depends()):
     try:
-        return auth_service.register(user.username, user.password)
+        return auth_service.register(user)
     except HTTPException as e:
         raise e

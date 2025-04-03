@@ -1,9 +1,9 @@
 from repositories.QuizRepository import QuizRepository
 from repositories.FolderRepository import FolderRepository
 from fastapi import Depends, HTTPException, status
-from models.QuizModel import QuizCreate, QuizResponse, QuizUpdate
+from models.QuizModel import QuizCreate, QuizResponse, QuizUpdate, Question
 from typing import List
-
+from fastapi.responses import JSONResponse
 
 class QuizService:
     quiz_repository: QuizRepository
@@ -38,6 +38,15 @@ class QuizService:
             )
 
         return quiz
+
+    def get_quiz_questions(self, quiz_id: str) -> List[Question]:
+        quiz = self.quiz_repository.find_by_id(quiz_id)
+        if not quiz:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Quiz not found"
+            )
+        
+        return quiz.questions
 
     def list_quizzes(self, limit: int, start: int) -> List[QuizResponse]:
         return self.quiz_repository.list(limit, start)
