@@ -73,3 +73,10 @@ class UserResponse(UserBase):
 
 class UserResponseWithFolder(UserResponse):
     folders: list[Folder] = []
+
+
+class UserStatsResponse(SQLModel):
+    total_folders: int
+    total_flashcards: int
+    total_notes: int
+    total_quizzes: int
