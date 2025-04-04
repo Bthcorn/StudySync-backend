@@ -21,6 +21,7 @@ class Flashcard(FlashcardBase, table=True):
         sa_type=sa.DateTime(timezone=True),
     )
     updated_at: Optional[datetime] = Field(
+        default_factory=datetime.now,
         sa_column=Column(
             sa.DateTime(timezone=True),
             onupdate=func.now(),
@@ -55,3 +56,27 @@ class Term(TermBase, table=True):
         default=None, foreign_key="flashcard.id", ondelete="CASCADE"
     )
     flashcard: Optional["Flashcard"] = Relationship(back_populates="terms")
+
+class FlashcardCreate(FlashcardBase):
+    pass
+
+class FlashcardUpdate(FlashcardBase):
+    pass
+    
+class FlashcardResponse(SQLModel):
+    id: uuid.UUID
+    name: str
+    folder_id: Optional[uuid.UUID] = Field(
+        default=None, foreign_key="folder.id", ondelete="CASCADE"
+    )
+
+
+class TermCreate(TermBase):
+    pass
+
+class TermUpdate(TermBase):
+    pass
+
+class TermResponse(TermBase):
+    id: uuid.UUID
+    flashcard_id: Optional[uuid.UUID]
