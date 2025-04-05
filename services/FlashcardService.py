@@ -20,6 +20,10 @@ class FlashcardService:
         if not folder:
             raise HTTPException(status_code=404, detail="Folder not found")
         
+        update_folder = folder
+        update_folder.total_items += 1
+        self.folder_repository.update(folder, update_folder)
+        
         return self.flashcard_repository.create(folder_id, flashcard)
     
     def get_flashcard(self, flashcard_id: uuid.UUID) -> Flashcard:
